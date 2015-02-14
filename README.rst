@@ -12,7 +12,7 @@ To view the demo, just
 #. download the project,
 #. ``cd`` into its directory,
 #. ``pip install`` all the libraries specified in the `requirements file <https://github.com/victor-o-silva/db_file_storage_tests/blob/master/requirements.txt>`_ in your environment,
-#. run ``python manage runserver`` from your shell and
+#. run ``python manage syncdb`` and ``python manage runserver`` from your shell and
 #. visit `http://localhost:8000 <http://localhost:8000>`_ in your browser.
 
 Testing your db_file_storage fork
