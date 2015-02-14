@@ -123,6 +123,26 @@ class AddEditAndDeleteCDsTests(TestCase):
             response['Content-Type']
         )
 
+    def test_download_with_invalid_name(self):
+        self.add_or_edit_cd(
+            method='add',
+            cd_key='gh',
+            with_cover_pic=False,
+            with_disc_pic=True,
+            disc_pic_nbr=1
+        )
+        # Valid name
+        cd = get_cd(cd_key='gh')
+        download_url = reverse('db_file_storage.download_file')
+        download_url += '?' + urlencode({'name': cd.disc})
+        response = self.client.get(download_url)
+        self.assertEqual(response.status_code, 200)
+        # Invalid name
+        download_url = reverse('db_file_storage.download_file')
+        download_url += '?' + urlencode({'name': 'invalid_name'})
+        response = self.client.get(download_url)
+        self.assertEqual(response.status_code, 400)
+
     def test(self):
         # Add "By The Way" (BTW) CD without disc and cover pictures.
         self.add_or_edit_cd(
