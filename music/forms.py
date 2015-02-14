@@ -11,6 +11,7 @@ from music.models import CD
 class CDForm(forms.ModelForm):
     class Meta:
         model = CD
+        exclude = []
         widgets = {
             'disc': DBClearableFileInput,
             'cover': DBClearableFileInput,

@@ -2,6 +2,9 @@
 from django.core.urlresolvers import reverse
 from django.db import models
 
+# third party imports
+from db_file_storage.model_utils import delete_file, delete_file_if_needed
+
 
 class CDDisc(models.Model):
     bytes = models.TextField()
@@ -33,3 +36,13 @@ class CD(models.Model):
 
     def get_absolute_url(self):
         return reverse('cd.edit', kwargs={'pk': self.pk})
+
+    def save(self, *args, **kwargs):
+        delete_file_if_needed(self, 'disc')
+        delete_file_if_needed(self, 'cover')
+        super(CD, self).save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        super(CD, self).delete(*args, **kwargs)
+        delete_file(self, 'disc')
+        delete_file(self, 'cover')
