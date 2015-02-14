@@ -7,5 +7,11 @@
 </form>
 {% if form.instance.pk %}
     <hr/>
-    <a href='{{ object.get_delete_url }}'>Delete</a>
+    <div align='center'>
+        <a href='{% url "cd.delete" pk=form.instance.pk %}'>Delete</a>
+    </div>
 {% endif %}
+<hr/>
+<div align='center'>
+    <a href='{% url "cd.list" %}'>Back to list</a>
+</div>
