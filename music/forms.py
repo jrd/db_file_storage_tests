@@ -12,6 +12,6 @@ class CDForm(forms.ModelForm):
     class Meta:
         model = CD
         widgets = {
-            'picture': DBClearableFileInput,
+            'disc': DBClearableFileInput,
             'cover': DBClearableFileInput,
         }
