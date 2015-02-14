@@ -33,4 +33,4 @@ INSTALLED_APPS = (
 
 DEFAULT_FILE_STORAGE = 'db_file_storage.storage.DatabaseFileStorage'
 
-TEST_FILES_DIR = os.path.join(BASE_DIR, 'test_files')
+TEST_FILES_DIR = os.path.join(BASE_DIR, 'files_for_testing')
