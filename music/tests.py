@@ -9,6 +9,7 @@ from django.core.urlresolvers import reverse
 from django.test import TestCase
 
 # project imports
+from .forms import CDForm
 from .models import CD, CDDisc, CDCover
 
 
@@ -143,7 +144,22 @@ class AddEditAndDeleteCDsTests(TestCase):
         response = self.client.get(download_url)
         self.assertEqual(response.status_code, 400)
 
-    def test(self):
+    def test_form_widget_shows_proper_filename(self):
+        self.add_or_edit_cd(
+            method='add',
+            cd_key='btw',
+            with_cover_pic=False,
+            with_disc_pic=True,
+            disc_pic_nbr=1
+        )
+        cd = get_cd(cd_key='btw')
+        form = CDForm(instance=cd)
+        assert '>btw_disc1.png</a>' in form.as_p()
+
+    def test_files_operations(self):
+        self.cover_count = 0
+        self.disc_count = 0
+
         # Add "By The Way" (BTW) CD without disc and cover pictures.
         self.add_or_edit_cd(
             method='add',
@@ -350,3 +366,74 @@ class AddEditAndDeleteCDsTests(TestCase):
         self.assertEqual(self.cover_count, 0)
         self.assertEqual(self.disc_count, 0)
         self.assert_pictures_count()
+
+    def test_send_same_file_for_different_rows(self):
+        url = reverse('cd.add')
+        picture_path = CDS_DATA['btw']['cover_path']
+
+        picture_file = open(picture_path, 'rb')
+        form_data = {
+            'name': CDS_DATA['btw']['name'],
+            'cover': picture_file
+        }
+        self.client.post(url, form_data)
+        picture_file.close()
+
+        picture_file = open(picture_path, 'rb')
+        form_data = {
+            'name': CDS_DATA['gh']['name'],
+            'cover': picture_file
+        }
+        self.client.post(url, form_data)
+        picture_file.close()
+
+        self.cover_count = 2
+        self.disc_count = 0
+        self.assert_pictures_count()
+
+        cd_btw = get_cd(cd_key='btw')
+        cd_gh = get_cd(cd_key='gh')
+        self.assertNotEqual(cd_btw.cover.name, cd_gh.cover.name)
+
+    def test_file_with_no_extension(self):
+        url = reverse('cd.add')
+        pic_path = os.path.join(settings.TEST_FILES_DIR, 'btw_cover_no_ext')
+
+        picture_file = open(pic_path, 'rb')
+        form_data = {
+            'name': CDS_DATA['btw']['name'],
+            'cover': picture_file
+        }
+        self.client.post(url, form_data)
+        picture_file.close()
+
+        cd_btw = get_cd(cd_key='btw')
+        assert cd_btw.cover.name.endswith('/btw_cover_no_ext')
+
+    def test_same_file_with_no_extension_for_different_rows(self):
+        url = reverse('cd.add')
+        pic_path = os.path.join(settings.TEST_FILES_DIR, 'btw_cover_no_ext')
+
+        picture_file = open(pic_path, 'rb')
+        form_data = {
+            'name': CDS_DATA['btw']['name'],
+            'cover': picture_file
+        }
+        self.client.post(url, form_data)
+        picture_file.close()
+
+        picture_file = open(pic_path, 'rb')
+        form_data = {
+            'name': CDS_DATA['gh']['name'],
+            'cover': picture_file
+        }
+        self.client.post(url, form_data)
+        picture_file.close()
+
+        self.cover_count = 2
+        self.disc_count = 0
+        self.assert_pictures_count()
+
+        cd_btw = get_cd(cd_key='btw')
+        cd_gh = get_cd(cd_key='gh')
+        self.assertNotEqual(cd_btw.cover.name, cd_gh.cover.name)
