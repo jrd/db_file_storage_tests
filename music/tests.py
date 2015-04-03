@@ -5,12 +5,13 @@ from urllib import urlencode
 
 # django imports
 from django.conf import settings
+from django.core.files.base import ContentFile
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 
 # project imports
 from .forms import CDForm
-from .models import CD, CDDisc, CDCover
+from .models import CD, CDDisc, CDCover, SoundDevice
 
 
 CDS_DATA = {
@@ -437,3 +438,20 @@ class AddEditAndDeleteCDsTests(TestCase):
         cd_btw = get_cd(cd_key='btw')
         cd_gh = get_cd(cd_key='gh')
         self.assertNotEqual(cd_btw.cover.name, cd_gh.cover.name)
+
+    def test_save_file_without_using_form(self):
+        file_name = 'manual.txt'
+        file_content_string = 'Test file content'
+        file_content = ContentFile(file_content_string)
+
+        sound_device = SoundDevice(name='BXPM 778')
+        sound_device.instruction_manual.save(file_name, file_content)
+        sound_device.save()
+        sound_device_id = sound_device.id
+
+        saved_sound_device = SoundDevice.objects.get(id=sound_device_id)
+        saved_sound_device.instruction_manual.open('r')
+        saved_sound_device_file_content_string = saved_sound_device.instruction_manual.read()
+        saved_sound_device.instruction_manual.close()
+
+        self.assertEqual(file_content_string, saved_sound_device_file_content_string)

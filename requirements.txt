@@ -1,4 +1,4 @@
 Django==1.7
 Pillow==2.7.0
-django-db-file-storage==0.2.6
+django-db-file-storage==0.2.7
 wsgiref==0.1.2

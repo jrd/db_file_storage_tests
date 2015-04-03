@@ -46,3 +46,18 @@ class CD(models.Model):
         super(CD, self).delete(*args, **kwargs)
         delete_file(self, 'disc')
         delete_file(self, 'cover')
+
+
+class SoundDeviceInstructionManual(models.Model):
+    bytes = models.TextField()
+    filename = models.CharField(max_length=255)
+    mimetype = models.CharField(max_length=50)
+
+
+class SoundDevice(models.Model):
+    name = models.CharField(max_length=100)
+    instruction_manual = models.FileField(
+        upload_to='music.SoundDeviceInstructionManual/bytes/filename/mimetype',
+        blank=True,
+        null=True
+    )
