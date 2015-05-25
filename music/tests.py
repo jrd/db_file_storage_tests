@@ -10,7 +10,7 @@ from django.core.urlresolvers import reverse
 from django.test import TestCase
 
 # project imports
-from .forms import CDForm
+from .forms import CDForm, CDAdminForm
 from .models import CD, CDDisc, CDCover, SoundDevice
 
 
@@ -155,6 +155,18 @@ class AddEditAndDeleteCDsTests(TestCase):
         )
         cd = get_cd(cd_key='btw')
         form = CDForm(instance=cd)
+        assert '>btw_disc1.png</a>' in form.as_p()
+
+    def test_admin_form_widget_shows_proper_filename(self):
+        self.add_or_edit_cd(
+            method='add',
+            cd_key='btw',
+            with_cover_pic=False,
+            with_disc_pic=True,
+            disc_pic_nbr=1
+        )
+        cd = get_cd(cd_key='btw')
+        form = CDAdminForm(instance=cd)
         assert '>btw_disc1.png</a>' in form.as_p()
 
     def test_files_operations(self):
